@@ -40,6 +40,23 @@ model Country {
   icon      String?
 }
 
+model Asists {
+  id        Int      @id @default(autoincrement())
+  fileType String?
+  tags      Json[]
+  height    Int?
+  width     Int?
+  slug     String?
+  fileName String?
+  mimeType String?
+  fileSize Int?
+  isImage  Boolean @default(false)
+  createdBy Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  adminid  Int?
+}
+
 // model Icon {
 //   id        Int     @id @default(autoincrement())
 //   countryId Int

@@ -6,6 +6,9 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { CountryModule } from './country/country.modul';
+import { AsistsModule } from './asists/asists.modul';
+import { UsersModule } from './user/user.modul';
 @Module({
   imports: [
     // ServeStaticModule.forRoot({
@@ -20,8 +23,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 
     PrismaModule,
     AuthModule,
-    // UsersModule,
+    AsistsModule,
+    UsersModule,
     AdminModule,
+    CountryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -110,4 +110,64 @@ export class AdminService {
       console.error(error);
     }
   }
+
+  //update
+  async update(user: Admin, data: CreateAdminDto): Promise<any> {
+    try {
+      const admin = await this.prisma.admin.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
+      if (!admin) {
+        throw new NotFoundException('admin not found');
+      }
+      const updatedAdmin = await this.prisma.admin.update({
+        where: {
+          id: user.id,
+        },
+        data,
+      });
+      return updatedAdmin;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  //show all admins
+  async findAll(): Promise<any[]> {
+    const data = await this.prisma.admin.findMany();
+    return data;
+  }
+
+  //show by admin id
+  async findOne(id: number): Promise<any> {
+    const data = await this.prisma.admin.findUnique({
+      where: { id },
+    });
+    return data;
+  }
+
+  //delete admin by id
+  async deleteById(id: number): Promise<any> {
+    const data = await this.prisma.admin.delete({
+      where: { id },
+    });
+    return data;
+  }
+
+  //update by id
+  async updateById(id: number, data: CreateAdminDto): Promise<any> {
+    const admin = await this.prisma.admin.findUnique({
+      where: { id },
+    });
+    if (!admin) {
+      throw new NotFoundException('admin not found');
+    }
+    const updatedAdmin = await this.prisma.admin.update({
+      where: { id },
+      data,
+    });
+    return updatedAdmin;
+  }
 }

@@ -22,7 +22,7 @@ export const editFileName = (req, file, callback) => {
 // Function to filter image files
 export const imageFileFilter = (req, file, callback) => {
   // Check if the original file name matches a regular expression for image file extensions (jpg, jpeg, png, gif)
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|csv)$/)) {
     // If the file does not match the allowed extensions, return an error to the 'callback'
     return callback(new Error('Only image files are allowed!'), false);
   }
