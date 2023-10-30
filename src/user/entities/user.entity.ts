@@ -47,4 +47,9 @@ export class UserEntity implements User {
     example: '2021-10-10T06:25:46.000Z',
   })
   updatedAt: Date;
+  @ApiProperty({
+    description: 'roles',
+    example: 'admin',
+  })
+  roles: string;
 }

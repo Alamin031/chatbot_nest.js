@@ -13,11 +13,4 @@ export class AuthController {
   async login(@Body() { email, password }: LoginDto): Promise<any> {
     return await this.authService.login(email, password);
   }
-
-  //admin login
-  @Post('admin/login')
-  @ApiOkResponse({ description: 'Login' })
-  async adminLogin(@Body() { email, password }: LoginDto): Promise<any> {
-    return await this.authService.adminLogin(email, password);
-  }
 }

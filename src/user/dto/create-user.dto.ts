@@ -6,6 +6,7 @@ export class UserCreateDto {
   @IsNotEmpty()
   @IsString()
   username: string;
+
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -21,4 +22,8 @@ export class UserCreateDto {
   @IsString()
   @MinLength(6)
   password: string;
+
+  @ApiProperty()
+  @IsString()
+  roles: string;
 }

@@ -8,6 +8,7 @@ import {
   Put,
   UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import {
@@ -16,7 +17,6 @@ import {
   ApiBasicAuth,
   ApiTags,
 } from '@nestjs/swagger';
-import { AdminEntity } from './entities/admin.entity';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { ApiFile } from '../decorators/file.decorator';
 import { GetUser } from 'src/decorators/User';
@@ -24,7 +24,11 @@ import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/auth/enums/auth.role';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/auth/guards/auth.guard';
-import { Admin } from '@prisma/client';
+import { Admin, User } from '@prisma/client';
+import { LogAdminData } from 'src/decorators/user-logger.decorator';
+import { ErrorsInterceptor } from 'src/decorators/errors.interceptor';
+import { UserCreateDto } from 'src/user/dto/create-user.dto';
+import { UserEntity } from 'src/user/entities/user.entity';
 @ApiTags('Admin')
 @Controller('admin')
 export class AdminController {
@@ -35,15 +39,17 @@ export class AdminController {
   @Roles(Role.Admin)
   @ApiOkResponse({ description: 'Profile' })
   @Get('profile')
-  async profile(@GetUser() user: Admin): Promise<any> {
+  async profile(@LogAdminData() user: Admin): Promise<any> {
     return user;
   }
-  //signup
-  @Post('signup')
-  @ApiOkResponse({ description: 'Signup successfull.' })
-  @ApiCreatedResponse({ type: AdminEntity })
-  async signup(@Body() data: CreateAdminDto): Promise<any> {
-    return this.adminService.signup(data);
+  @Post()
+  @ApiBasicAuth('access-token')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.Admin)
+  @ApiCreatedResponse({ type: UserEntity })
+  @UseInterceptors(ErrorsInterceptor)
+  async AddUsers(@Body() createUserDto: UserCreateDto) {
+    return await this.adminService.create(createUserDto);
   }
   //file upload
   @Put('upload')
@@ -51,10 +57,10 @@ export class AdminController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.Admin)
   @ApiOkResponse({ description: 'Upload successfull.' })
-  @ApiCreatedResponse({ type: AdminEntity })
-  @ApiFile('avatar', '/admin/avatar', {}, true)
+  @ApiCreatedResponse({ type: UserEntity })
+  @ApiFile('avatar', '/user/avatar', {}, true)
   async upload(
-    @GetUser() user: Admin,
+    @GetUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<any> {
     console.log(file);
@@ -67,7 +73,7 @@ export class AdminController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.Admin)
   @ApiOkResponse({ description: 'Delete successfull.' })
-  @ApiCreatedResponse({ type: AdminEntity })
+  @ApiCreatedResponse({ type: UserEntity })
   async delete(@GetUser() user: Admin): Promise<any> {
     return this.adminService.delete(user);
   }
@@ -77,9 +83,9 @@ export class AdminController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.Admin)
   @ApiOkResponse({ description: 'Update successfull.' })
-  @ApiCreatedResponse({ type: AdminEntity })
+  @ApiCreatedResponse({ type: UserEntity })
   async update(
-    @GetUser() user: Admin,
+    @GetUser() user: User,
     @Body() data: CreateAdminDto,
   ): Promise<any> {
     return this.adminService.update(user, data);
@@ -91,8 +97,8 @@ export class AdminController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.Admin)
   @ApiOkResponse({ description: 'All admins.' })
-  @ApiCreatedResponse({ type: AdminEntity })
-  async findAll(): Promise<AdminEntity[]> {
+  @ApiCreatedResponse({ type: UserEntity })
+  async findAll(): Promise<UserEntity[]> {
     return await this.adminService.findAll();
   }
   //show by admin id

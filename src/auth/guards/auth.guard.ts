@@ -26,7 +26,13 @@ export class RolesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest();
 
     // Check if the user's role (if available) includes any of the required roles. If so, allow access by returning true.
-    console.log(user.role);
-    return requiredRoles.some((role) => user.role?.includes(role));
+    console.log(user.roles);
+    if (user.roles === 'admin') {
+      return true;
+    }
+    if (requiredRoles.some((role) => user.roles?.includes(role))) {
+      return true;
+    }
+    return false;
   }
 }

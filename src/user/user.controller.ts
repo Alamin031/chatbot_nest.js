@@ -1,7 +1,6 @@
 import {
   Controller,
   Param,
-  Post,
   Body,
   UseGuards,
   Get,
@@ -9,6 +8,7 @@ import {
   Put,
   UploadedFile,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiOkResponse,
@@ -26,29 +26,24 @@ import { Roles } from 'src/auth/roles.decorator';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/decorators/User';
 import { ApiFile } from 'src/decorators/file.decorator';
+import { ErrorsInterceptor } from 'src/decorators/errors.interceptor';
+import { LogAdminData } from 'src/decorators/user-logger.decorator';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //signup
-  @Post('signup')
-  @ApiOkResponse({ description: 'User Register successfull.' })
-  @ApiCreatedResponse({ type: UserEntity })
-  async signup(@Body() data: UserCreateDto): Promise<any> {
-    return this.userService.signup(data);
-  }
-  @Post()
+  //get profile
+  @Get('profile')
   @ApiBasicAuth('access-token')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(Role.Admin)
-  @ApiCreatedResponse({ type: UserEntity })
-  async create(@Body() createUserDto: UserCreateDto) {
-    return await this.userService.create(createUserDto);
+  @Roles(Role.User)
+  @ApiOkResponse({ description: 'Profile' })
+  async profile(@LogAdminData() user: User): Promise<any> {
+    return user;
   }
-
-  @Get()
+  @Get('all')
   @ApiOkResponse({ type: UserEntity, isArray: true })
   @ApiBasicAuth('access-token')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -60,6 +55,7 @@ export class UserController {
 
   @Get(':id')
   @ApiOkResponse({ type: UserEntity })
+  @Roles(Role.User)
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const user = await this.userService.findOne(id);
     return user;
@@ -94,7 +90,15 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(Role.Admin)
   @ApiOkResponse({ type: UserEntity })
+  @UseInterceptors(ErrorsInterceptor)
   async remove(@Param('id', ParseIntPipe) id: number) {
-    return new UserEntity(await this.userService.remove(id));
+    try {
+      const user = await this.userService.remove(id);
+      return new UserEntity(user);
+    } catch (error) {
+      console.error('my error:', error);
+
+      throw error;
+    }
   }
 }

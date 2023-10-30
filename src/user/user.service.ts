@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { hashPassword } from 'src/config/helpers';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
@@ -9,29 +9,32 @@ import { User } from '@prisma/client';
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
   //signup
-  async signup(createuser: UserCreateDto) {
-    const hashpass = await hashPassword(createuser.password);
-    const user = await this.prisma.user.create({
-      data: {
-        ...createuser,
-        password: hashpass,
-      },
-    });
-    const data = new UserEntity(user);
-    return data;
-  }
+  // async signup(createuser: UserCreateDto) {
+  //   const hashpass = await hashPassword(createuser.password);
+  //   const user = await this.prisma.user.create({
+  //     data: {
+  //       ...createuser,
+  //       password: hashpass,
+  //     },
+  //   });
+  //   const data = new UserEntity(user);
+  //   return data;
+  // }
 
-  //create user
-  async create(createuser: UserCreateDto) {
-    const hashpass = await hashPassword(createuser.password);
+  async signup(createUserDto: UserCreateDto): Promise<UserEntity> {
+    const hashpass = await hashPassword(createUserDto.password);
+
     const user = await this.prisma.user.create({
       data: {
-        ...createuser,
+        username: createUserDto.username,
+        name: createUserDto.name,
+        email: createUserDto.email,
         password: hashpass,
+        roles: createUserDto.roles,
       },
     });
-    const data = new UserEntity(user);
-    return data;
+
+    return new UserEntity(user);
   }
 
   //get all user
@@ -67,9 +70,21 @@ export class UserService {
 
   //delete user by id
   async remove(id: number): Promise<UserEntity> {
-    const user = await this.prisma.user.delete({
-      where: { id },
-    });
-    return new UserEntity(user);
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+      });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const deletedUser = await this.prisma.user.delete({
+        where: { id },
+      });
+
+      return new UserEntity(deletedUser);
+    } catch (error) {
+      throw error;
+    }
   }
 }

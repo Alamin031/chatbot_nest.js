@@ -2,25 +2,31 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { hashPassword } from 'src/config/helpers';
-import { AdminEntity } from './entities/admin.entity';
-import { Admin } from '@prisma/client';
+import { Admin, User } from '@prisma/client';
 import * as fs from 'fs';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UserCreateDto } from 'src/user/dto/create-user.dto';
 
 @Injectable()
 export class AdminService {
   constructor(private readonly prisma: PrismaService) {}
-  //signup
-  async signup(createadmin: CreateAdminDto) {
-    const hashpass = await hashPassword(createadmin.password);
-    const admin = await this.prisma.admin.create({
+  //create user
+  async create(createUserDto: UserCreateDto): Promise<UserEntity> {
+    const hashpass = await hashPassword(createUserDto.password);
+
+    const user = await this.prisma.user.create({
       data: {
-        ...createadmin,
+        username: createUserDto.username,
+        name: createUserDto.name,
+        email: createUserDto.email,
         password: hashpass,
+        roles: createUserDto.roles,
       },
     });
-    const data = new AdminEntity(admin);
-    return data;
+
+    return new UserEntity(user);
   }
+
   //file upload
   // async upload(user: Admin, file: Express.Multer.File) {
   //   const avatar = file.path.split('public')[1];
@@ -37,43 +43,42 @@ export class AdminService {
   //   return data;
   // }
 
-  async upload(user: Admin, file: Express.Multer.File) {
+  async upload(users: User, file: Express.Multer.File) {
     try {
       const avatar = file.path.split('public')[1];
 
-      const admin = await this.prisma.admin.findUnique({
+      const user = await this.prisma.user.findUnique({
         where: {
-          id: user.id,
+          id: users.id,
         },
       });
 
-      if (!admin) {
+      if (!user) {
         throw new NotFoundException('User not found');
       }
 
       if (avatar) {
-        if (admin.avatar) {
-          const avatarPath = `./public/${admin.avatar}`;
+        if (user.avatar) {
+          const avatarPath = `./public/${user.avatar}`;
 
           if (fs.existsSync(avatarPath)) {
             await fs.promises.unlink(avatarPath);
           }
 
           // Update the admin's avatar with the new file path
-          const updatedAdmin = await this.prisma.admin.update({
+          const updatedAdmin = await this.prisma.user.update({
             where: {
-              id: user.id,
+              id: users.id,
             },
             data: {
               avatar: avatar,
             },
           });
 
-          const data = new AdminEntity(updatedAdmin);
+          const data = new UserEntity(updatedAdmin);
           return data;
         } else {
-          // Handle the case where no new avatar is provided
-          return admin;
+          return user;
         }
       }
     } catch (error) {

@@ -9,13 +9,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { CountryModule } from './country/country.modul';
 import { AsistsModule } from './asists/asists.modul';
 import { UsersModule } from './user/user.modul';
+// import { ErrorsInterceptor } from './decorators/errors.interceptor';
+// import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
   imports: [
-    // ServeStaticModule.forRoot({
-    //   rootPath: join(__dirname, '..', '..', 'public'),
-    //   serveStaticOptions: { index: false },
-    // }),
-
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
       serveStaticOptions: { redirect: false, index: false },
@@ -29,6 +26,13 @@ import { UsersModule } from './user/user.modul';
     CountryModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // Register the ErrorsInterceptor as a global interceptor
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: ErrorsInterceptor,
+    // },
+  ],
 })
 export class AppModule {}
