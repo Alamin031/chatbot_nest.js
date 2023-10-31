@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Asists } from '@prisma/client';
+import { Assets } from '@prisma/client';
 
-export class AsistsEntity implements Asists {
-  constructor(partial: Partial<AsistsEntity>) {
+export class AssetsEntity implements Assets {
+  constructor(partial: Partial<AssetsEntity>) {
     Object.assign(this, partial);
   }
   @ApiProperty({

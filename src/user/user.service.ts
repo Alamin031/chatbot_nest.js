@@ -1,90 +1,77 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { hashPassword } from 'src/config/helpers';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserEntity } from './entities/user.entity';
 import { UserCreateDto } from './dto/create-user.dto';
 import { User } from '@prisma/client';
+import * as fs from 'fs';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
-  //signup
-  // async signup(createuser: UserCreateDto) {
-  //   const hashpass = await hashPassword(createuser.password);
-  //   const user = await this.prisma.user.create({
-  //     data: {
-  //       ...createuser,
-  //       password: hashpass,
-  //     },
-  //   });
-  //   const data = new UserEntity(user);
-  //   return data;
-  // }
-
-  async signup(createUserDto: UserCreateDto): Promise<UserEntity> {
-    const hashpass = await hashPassword(createUserDto.password);
-
-    const user = await this.prisma.user.create({
-      data: {
-        username: createUserDto.username,
-        name: createUserDto.name,
-        email: createUserDto.email,
-        password: hashpass,
-        roles: createUserDto.roles,
-      },
-    });
-
-    return new UserEntity(user);
-  }
-
-  //get all user
-  async findAll(): Promise<UserEntity[]> {
-    const users = await this.prisma.user.findMany();
-    return users.map((user) => new UserEntity(user));
-  }
-
-  //get user by id
-  async findOne(id: number): Promise<UserEntity> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-    });
-    return new UserEntity(user);
-  }
-
   //update user by id
-  async update(id: number, data: UserCreateDto): Promise<UserEntity> {
-    const user = await this.prisma.user.update({
-      where: { id },
-      data,
-    });
-    return new UserEntity(user);
-  }
-  async uploadAvater(user: User, file: Express.Multer.File) {
-    const avater = file.path.split('public')[1];
-    const response = await this.prisma.user.update({
-      where: { id: user.id },
-      data: { avatar: avater },
-    });
-    return response;
-  }
-
-  //delete user by id
-  async remove(id: number): Promise<UserEntity> {
+  //update
+  async update(users: User, data: UserCreateDto): Promise<any> {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { id },
+      const user = await this.prisma.admin.findUnique({
+        where: {
+          id: users.id,
+        },
       });
       if (!user) {
+        throw new NotFoundException('user not found');
+      }
+      const updatedUser = await this.prisma.user.update({
+        where: {
+          id: users.id,
+        },
+        data,
+      });
+      return updatedUser;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async upload(user: User, file: Express.Multer.File) {
+    try {
+      const avatar = file.path.split('public')[1];
+
+      const admin = await this.prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
+
+      if (!admin) {
         throw new NotFoundException('User not found');
       }
 
-      const deletedUser = await this.prisma.user.delete({
-        where: { id },
-      });
+      console.log('avatar:', avatar);
 
-      return new UserEntity(deletedUser);
+      if (avatar) {
+        // Remove the existing avatar if it exists
+        if (admin.avatar) {
+          const avatarPath = `./public/${admin.avatar}`;
+
+          if (fs.existsSync(avatarPath)) {
+            await fs.promises.unlink(avatarPath);
+          }
+        }
+
+        // Update the admin's avatar with the new file path
+        const updatedAdmin = await this.prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            avatar: avatar,
+          },
+        });
+
+        const data = new UserEntity(updatedAdmin);
+        return data;
+      }
     } catch (error) {
-      throw error;
+      console.error(error);
     }
   }
 }

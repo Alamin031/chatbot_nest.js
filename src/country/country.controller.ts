@@ -8,13 +8,23 @@ import {
   Post,
   Put,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { CountryService } from './country.service';
-import { ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBasicAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApiFile } from 'src/decorators/file.decorator';
 import { CreateCountryDto } from './dto/create-country.dto';
 import { CountryEntity } from './entities/country.entity';
 import { UpdateCountryDto } from './dto/update-country.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Role } from 'src/auth/enums/auth.role';
+import { RolesGuard } from 'src/auth/guards/auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
 
 const CustomAPIDOC = {
   name: {
@@ -33,6 +43,9 @@ const CustomAPIDOC = {
 };
 @ApiTags('Country')
 @Controller('country')
+@ApiBasicAuth('access-token')
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles(Role.Admin)
 export class CountryController {
   constructor(private readonly countryService: CountryService) {}
   @Post()
@@ -49,6 +62,9 @@ export class CountryController {
 
   //update by id country
   @Put(':id')
+  @ApiBasicAuth('access-token')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.Admin)
   @ApiOkResponse({ description: 'Country updated successfully.' })
   @ApiCreatedResponse({ type: CountryEntity })
   @ApiFile('icon', '/country-icon', CustomAPIDOC)
@@ -66,6 +82,9 @@ export class CountryController {
   }
   //show all countries
   @Get()
+  @ApiBasicAuth('access-token')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.User)
   @ApiOkResponse({ description: 'All countries.' })
   @ApiCreatedResponse({ type: CountryEntity })
   async findAll(): Promise<CountryEntity[]> {
@@ -73,12 +92,18 @@ export class CountryController {
   }
   //show by id
   @Get(':id')
+  @ApiBasicAuth('access-token')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.User)
   async findOne(@Param('id', new ParseIntPipe()) id: number) {
     return await this.countryService.findOne(id);
   }
 
   //delete by id
   @Get('delete/:id')
+  @ApiBasicAuth('access-token')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(Role.Admin)
   async delete(@Param('id', new ParseIntPipe()) id: number) {
     return await this.countryService.delete(id);
   }

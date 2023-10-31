@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateAsistsDto } from './dto/asists.create.dto';
-import { Asists } from '@prisma/client';
+import { CreateAsistsDto } from './dto/assets.create.dto';
+import { Assets } from '@prisma/client';
 // import imageSize from 'image-size';
 // import * as sizeOf from 'buffer-image-size';
 import sizeOf from 'image-size';
 import * as fs from 'fs';
 
 @Injectable()
-export class AsistsService {
+export class AssetsService {
   constructor(private readonly prisma: PrismaService) {}
 
   //create
@@ -67,7 +67,7 @@ export class AsistsService {
   async processImageFile(
     data: CreateAsistsDto,
     file: Express.Multer.File,
-  ): Promise<Asists> {
+  ): Promise<Assets> {
     try {
       const fileName = file.path.split('public')[1];
 
@@ -99,7 +99,7 @@ export class AsistsService {
           createdBy: data.createdBy || null,
         };
 
-        const createdAsists = await this.prisma.asists.create({
+        const createdAsists = await this.prisma.assets.create({
           data: asistsData,
         });
 
@@ -115,29 +115,29 @@ export class AsistsService {
 
   //get by id
   async show(id: number) {
-    const asists = await this.prisma.asists.findUnique({
+    const assets = await this.prisma.assets.findUnique({
       where: { id },
     });
-    return asists;
+    return assets;
   }
   //get all
   async showall(): Promise<any[]> {
-    const asists = await this.prisma.asists.findMany();
-    return asists;
+    const assets = await this.prisma.assets.findMany();
+    return assets;
   }
   //update by id
   async update(id: number, data: any): Promise<any> {
-    const asists = await this.prisma.asists.update({
+    const assets = await this.prisma.assets.update({
       where: { id },
       data,
     });
-    return asists;
+    return assets;
   }
   //delete by id
   async delete(id: number): Promise<any> {
-    const asists = await this.prisma.asists.delete({
+    const assets = await this.prisma.assets.delete({
       where: { id },
     });
-    return asists;
+    return assets;
   }
 }

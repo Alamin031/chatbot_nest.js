@@ -9,25 +9,25 @@ import {
   Put,
   UploadedFile,
 } from '@nestjs/common';
-import { AsistsService } from './asists.service';
+import { AssetsService } from './assets.service';
 import { ApiOkResponse, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
-import { CreateAsistsDto } from './dto/asists.create.dto';
+import { CreateAsistsDto } from './dto/assets.create.dto';
 import { ApiFile } from '../decorators/file.decorator';
-import { AsistsEntity } from './entities/asists.entity';
+import { AssetsEntity } from './entities/assets.entity';
 
-@ApiTags('asists')
-@Controller('asists')
+@ApiTags('assets')
+@Controller('assets')
 export class AsistsController {
-  constructor(private readonly asistsService: AsistsService) {}
+  constructor(private readonly assetsService: AssetsService) {}
   @Post('create')
   @ApiOkResponse({ description: 'create successfull.' })
-  @ApiFile('fileName', '/admin/asists', {}, true)
-  @ApiCreatedResponse({ type: AsistsEntity })
+  @ApiFile('fileName', '/assets', {}, true)
+  @ApiCreatedResponse({ type: AssetsEntity })
   async signup(
     @UploadedFile() file: Express.Multer.File,
     @Body() data: CreateAsistsDto,
   ): Promise<any> {
-    const createdAsists = await this.asistsService.processImageFile(data, file);
+    const createdAsists = await this.assetsService.processImageFile(data, file);
     return createdAsists;
   }
 
@@ -35,13 +35,13 @@ export class AsistsController {
   @Get(':id')
   @ApiOkResponse({ description: 'show successfull.' })
   async show(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
-    return await this.asistsService.show(id);
+    return await this.assetsService.show(id);
   }
   //show all
   @Get()
   @ApiOkResponse({ description: 'show all successfull.' })
   async showall(): Promise<any[]> {
-    return await this.asistsService.showall();
+    return await this.assetsService.showall();
   }
   //update by id
   @Put(':id')
@@ -50,12 +50,12 @@ export class AsistsController {
     @Param('id', new ParseIntPipe()) id: number,
     @Body() updateAsistsDto: CreateAsistsDto,
   ): Promise<any> {
-    return await this.asistsService.update(id, updateAsistsDto);
+    return await this.assetsService.update(id, updateAsistsDto);
   }
   //delete by id
   @Delete(':id')
   @ApiOkResponse({ description: 'delete successfull.' })
   async delete(@Param('id', new ParseIntPipe()) id: number): Promise<any> {
-    return await this.asistsService.delete(id);
+    return await this.assetsService.delete(id);
   }
 }

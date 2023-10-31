@@ -9,15 +9,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-// model User {
-//   id        Int      @id @default(autoincrement())
-//   username  String   @unique
-//   email     String   @unique
-//   password  String
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-//   avatar    String?
-// }
 model User {
   id        Int       @id @default(autoincrement())
   username  String    @unique
@@ -50,7 +41,7 @@ model Country {
   icon      String?
 }
 
-model Asists {
+model Assets {
   id        Int      @id @default(autoincrement())
   fileType String?
   tags      Json[]
@@ -66,10 +57,3 @@ model Asists {
   updatedAt DateTime @updatedAt
   adminid  Int?
 }
-
-// model Icon {
-//   id        Int     @id @default(autoincrement())
-//   countryId Int
-//   url       String
-//   country   Country @relation(fields: [countryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-// }
