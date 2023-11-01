@@ -7,7 +7,6 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CountryModule } from './country/country.modul';
-import { AsistsModule } from './asists/assets.modul';
 import { UsersModule } from './user/user.modul';
 // import { ErrorsInterceptor } from './decorators/errors.interceptor';
 // import { APP_INTERCEPTOR } from '@nestjs/core';
@@ -20,7 +19,6 @@ import { UsersModule } from './user/user.modul';
 
     PrismaModule,
     AuthModule,
-    AsistsModule,
     UsersModule,
     AdminModule,
     CountryModule,

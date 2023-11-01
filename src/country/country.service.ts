@@ -12,6 +12,20 @@ export class CountryService {
     private prisma: PrismaService,
     private readonly assetService: AssetService,
   ) {}
+
+  async createCountryy(
+    files: Express.Multer.File[],
+    createCountryDto: CreateCountryDto,
+  ) {
+    const country = await this.prisma.country.create({
+      data: {
+        ...createCountryDto,
+      },
+    });
+    const icon = await this.assetService.uploadIcon(files, country.id);
+    return country;
+  }
+  /////////////////////////////////////////////////////////////////////////
   async createCountry(
     files: Express.Multer.File[],
     createCountryDto: CreateCountryDto,

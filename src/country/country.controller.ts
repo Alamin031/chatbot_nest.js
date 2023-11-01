@@ -25,11 +25,11 @@ import { ApiFiles } from 'src/decorators/file.decorator';
 import { CreateCountryDto } from './dto/create-country.dto';
 // import { CountryEntity } from './entities/country.entity';
 import { UpdateCountryDto } from './dto/update-country.dto';
+import { AssetService } from './assets.service';
 // import { AuthGuard } from '@nestjs/passport';
 // import { Role } from 'src/auth/enums/auth.role';
 // import { RolesGuard } from 'src/auth/guards/auth.guard';
 // import { Roles } from 'src/auth/roles.decorator';
-import { AssetsService } from 'src/asists/assets.service';
 
 const CustomAPIDOC = {
   name: {
@@ -51,9 +51,9 @@ const CustomAPIDOC = {
 export class CountryController {
   constructor(
     private readonly countryService: CountryService,
-    private readonly assetsService: AssetsService,
+    private readonly assetsService: AssetService,
   ) {}
-  @Post()
+  @Post('create')
   @ApiFiles('icons', '/country-icon', CustomAPIDOC)
   @ApiCreatedResponse({ description: 'Country created successfully' })
   async createCountry(
@@ -61,7 +61,18 @@ export class CountryController {
     @UploadedFiles() files: Express.Multer.File[],
   ) {
     console.log('files:', files);
-    return await this.countryService.createCountry(files, createCountryDto);
+    return await this.countryService.createCountryy(files, createCountryDto);
+  }
+
+  @Post()
+  @ApiFiles('icons', '/country-icon', CustomAPIDOC)
+  @ApiCreatedResponse({ description: 'Country created successfully' })
+  async createCountr(
+    @Body() createCountryDto: CreateCountryDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    console.log('files:', files);
+    return await this.countryService.createCountryy(files, createCountryDto);
   }
 
   @Get(':id/country')
