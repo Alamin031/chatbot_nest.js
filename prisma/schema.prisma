@@ -40,6 +40,17 @@ model Country {
   status    String   @default("Draft")
   icon     Assets[] @relation("CountryIcons")
 }
+model Car {
+  id          Int      @id @default(autoincrement())
+  carName     String
+  description String?
+  carImages   Assets[] @relation("CarImages")
+  brandImages Assets[] @relation("CarBrandImages")
+  carLogos    Assets[] @relation("CarLogos")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status      String   @default("Draft")
+}
 
 model Assets {
   id        Int      @id @default(autoincrement())
@@ -56,5 +67,9 @@ model Assets {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   countryId Int?
-  country   Country?  @relation("CountryIcons", fields: [countryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  carId     Int?
+  country      Country? @relation("CountryIcons", fields: [countryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  carImages      Car[] @relation("CarImages")
+  carBrandImages Car[] @relation("CarBrandImages")
+  carLogos       Car[] @relation("CarLogos")
 }
