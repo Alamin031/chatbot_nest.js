@@ -53,27 +53,12 @@ export class CountryController {
     private readonly countryService: CountryService,
     private readonly assetsService: AssetsService,
   ) {}
-  // @Post()
-  // @ApiBasicAuth('access-token')
-  // @UseGuards(AuthGuard('jwt'), RolesGuard)
-  // @Roles(Role.Admin)
-  // @ApiOkResponse({ description: 'Country created successfully.' })
-  // @ApiCreatedResponse({ type: CountryEntity })
-  // // @ApiFile('icons', '/country-icon', CustomAPIDOC)
-  // @ApiFiles('icons', '/country-icon', CustomAPIDOC)
-  // async create(
-  //   @UploadedFile() file: Express.Multer.File,
-  //   @Body()
-  //   createCountryDto: CreateCountryDto,
-  // ) {
-  //   return await this.countryService.create(file, createCountryDto);
-  // }
   @Post()
-  @ApiFiles('icons', '/country-icon', CustomAPIDOC) // Use the custom ApiFiles decorator
+  @ApiFiles('icons', '/country-icon', CustomAPIDOC)
   @ApiCreatedResponse({ description: 'Country created successfully' })
   async createCountry(
     @Body() createCountryDto: CreateCountryDto,
-    @UploadedFiles() files: Express.Multer.File[], // Use UploadedFiles decorator to access the uploaded icons
+    @UploadedFiles() files: Express.Multer.File[],
   ) {
     console.log('files:', files);
     return await this.countryService.createCountry(files, createCountryDto);
@@ -83,6 +68,11 @@ export class CountryController {
   async getCountryIcons(@Param('id', ParseIntPipe) id: number) {
     return this.countryService.getCountryIcons(id);
   }
+  //get all countries
+  @Get()
+  async getAllCountries() {
+    return this.countryService.getAllCountries();
+  }
 
   @Get(':id/icon')
   async getCountryIconss(@Param('id', ParseIntPipe) id: number, @Res() res) {
@@ -90,7 +80,7 @@ export class CountryController {
     if (!country || !country.icon || country.icon.length === 0) {
       return res.status(404).send('Icons not found');
     }
-    const iconPath = country.icon[0].slug; //  the icon is an array, use [0] to access the first one
+    const iconPath = country.icon[0].slug;
     res.sendFile(iconPath, { root: './' });
   }
   @Delete(':id')
