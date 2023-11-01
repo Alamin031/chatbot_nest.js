@@ -31,29 +31,30 @@ model Admin {
 }
 
 model Country {
-  id        Int      @id @default(autoincrement()) // Assuming that there is an ID for the location
+  id        Int      @id @default(autoincrement())
   name      Json
   hasAreas  Boolean  @default(false)
   url       Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   status    String   @default("Draft")
-  icon      String?
+  icon     Assets[] @relation("CountryIcons")
 }
 
 model Assets {
   id        Int      @id @default(autoincrement())
-  fileType String?
+  fileType  String?
   tags      Json[]
   height    Int?
   width     Int?
-  slug     String?
-  fileName String?
-  mimeType String?
-  fileSize Int?
-  isImage  Boolean @default(false)
+  slug      String
+  fileName  String
+  mimeType  String
+  fileSize  Int?
+  isImage   Boolean
   createdBy Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  adminid  Int?
+  countryId Int?
+  country   Country?  @relation("CountryIcons", fields: [countryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

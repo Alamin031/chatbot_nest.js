@@ -5,6 +5,7 @@ export class AssetsEntity implements Assets {
   constructor(partial: Partial<AssetsEntity>) {
     Object.assign(this, partial);
   }
+  countryId: number;
   @ApiProperty({
     description: 'Asists id',
     example: '1',

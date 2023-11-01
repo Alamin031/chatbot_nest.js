@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AssetsService } from './assets.service';
 import { ApiOkResponse, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
-import { CreateAsistsDto } from './dto/assets.create.dto';
+import { CreateAssetDto } from './dto/assets.create.dto';
 import { ApiFile } from '../decorators/file.decorator';
 import { AssetsEntity } from './entities/assets.entity';
 
@@ -19,17 +19,17 @@ import { AssetsEntity } from './entities/assets.entity';
 @Controller('assets')
 export class AsistsController {
   constructor(private readonly assetsService: AssetsService) {}
-  @Post('create')
-  @ApiOkResponse({ description: 'create successfull.' })
-  @ApiFile('fileName', '/assets', {}, true)
-  @ApiCreatedResponse({ type: AssetsEntity })
-  async signup(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() data: CreateAsistsDto,
-  ): Promise<any> {
-    const createdAsists = await this.assetsService.processImageFile(data, file);
-    return createdAsists;
-  }
+  // @Post('create')
+  // @ApiOkResponse({ description: 'create successfull.' })
+  // @ApiFile('fileName', '/assets', {}, true)
+  // @ApiCreatedResponse({ type: AssetsEntity })
+  // async signup(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Body() data: CreateAsistsDto,
+  // ): Promise<any> {
+  //   const createdAsists = await this.assetsService.processImageFile(data, file);
+  //   return createdAsists;
+  // }
 
   //show by id
   @Get(':id')
@@ -48,7 +48,7 @@ export class AsistsController {
   @ApiOkResponse({ description: 'update successfull.' })
   async update(
     @Param('id', new ParseIntPipe()) id: number,
-    @Body() updateAsistsDto: CreateAsistsDto,
+    @Body() updateAsistsDto: CreateAssetDto,
   ): Promise<any> {
     return await this.assetsService.update(id, updateAsistsDto);
   }

@@ -1,39 +1,49 @@
+import { IsString, IsNumber, IsBoolean, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber } from 'class-validator';
 
-export class CreateAsistsDto {
-  @ApiProperty()
+export class CreateAssetDto {
   @IsString()
-  fileType?: string;
-
-  // Tags can be customized based on your requirements
   @ApiProperty()
-  tags?: string[];
+  fileType: string;
 
-  // Height and width are automatically extracted from the uploaded image
+  @IsString({ each: true })
   @ApiProperty()
+  tags: string[];
+
   @IsNumber()
-  height?: number;
-
   @ApiProperty()
+  height: number;
+
   @IsNumber()
-  width?: number;
-
-  // The following fields are filled automatically based on the uploaded image
   @ApiProperty()
-  slug?: string;
+  width: number;
 
+  @IsString()
   @ApiProperty()
-  fileName?: string;
+  slug: string;
 
+  @IsString()
   @ApiProperty()
-  mimeType?: string;
+  fileName: string;
 
+  @IsString()
   @ApiProperty()
+  mimeType: string;
+
   @IsNumber()
-  fileSize?: number;
-
   @ApiProperty()
+  fileSize: number;
+
+  @IsBoolean()
+  @ApiProperty()
+  isImage: boolean;
+
   @IsNumber()
-  createdBy?: number;
+  @ApiProperty()
+  createdBy: number | null;
+
+  // Add the 'country' property if it's required
+  @IsNumber()
+  @ApiProperty()
+  country?: number;
 }
