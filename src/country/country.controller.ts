@@ -60,7 +60,7 @@ export class CountryController {
     @Body() createCountryDto: CreateCountryDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    console.log('files:', files);
+    console.log('my files:', files);
     return await this.countryService.createCountryy(files, createCountryDto);
   }
 

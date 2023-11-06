@@ -13,6 +13,7 @@ import { isArray } from 'lodash';
 export class DeleteFileOnErrorFilter implements ExceptionFilter {
   // Implement the catch method required by the ExceptionFilter interface
   catch(exception: BadRequestException, host: ArgumentsHost) {
+    console.log('DeleteFileOnErrorFilter');
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -36,6 +37,7 @@ export class DeleteFileOnErrorFilter implements ExceptionFilter {
 export class DeleteFilesOnErrorFilter implements ExceptionFilter {
   // Implement the catch method required by the ExceptionFilter interface
   catch(exception: BadRequestException, host: ArgumentsHost) {
+    console.log('DeleteFilesOnErrorFilter');
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();

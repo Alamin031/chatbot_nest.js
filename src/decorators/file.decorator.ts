@@ -1,10 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { UseFilters, UseInterceptors, applyDecorators } from '@nestjs/common';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { editFileName, imageFileFilter } from 'src/middleware/uploader';
 import { diskStorage } from 'multer';
 import { BodyInterceptor } from './BodyInterceptor';
-import { DeleteFileOnErrorFilter } from './DeleteFileOnErrorFilter.decorator';
+import { DeleteFileOnErrorFilter, DeleteFilesOnErrorFilter } from './DeleteFileOnErrorFilter.decorator';
 
 export function ApiFile(
   fieldName = 'file', // Default name of the field in the request body
@@ -83,3 +84,70 @@ export function ApiFiles(
     // UseFilters(DeleteFileOnErrorFilter), // Apply a filter to handle errors during file upload
   );
 }
+//////////////////////////////////////////////////////////////////////////
+
+export function VehicleFiles(
+  fieldName = ['files'],
+  localOptions?: string,
+  restFeild?: any,
+  required = false,
+  fileFilter = imageFileFilter,
+) {
+  return applyDecorators(
+    ApiConsumes('multipart/form-data'),
+    ApiBody({
+      schema: {
+        type: 'object',
+        required: required ? fieldName : [],
+        properties: {
+          carImage: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+          arAndroid: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+          arIso: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+          banner: {
+            type: 'array',
+            items: {
+              type: 'string',
+              format: 'binary',
+            },
+          },
+          ...restFeild,
+        },
+      },
+    }),
+    UseInterceptors(
+      AnyFilesInterceptor({
+        storage: diskStorage({
+          destination: (req, file, cb) => {
+            const destination = `public${localOptions}/${file.fieldname}`;
+            cb(null, destination);
+          },
+          filename: editFileName,
+        }),
+        fileFilter: fileFilter,
+      }),
+      BodyInterceptor,
+    ),
+    UseFilters(DeleteFilesOnErrorFilter),
+  );
+}
+
+
+///////////////////////////////////////////////////////////////////////////

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -7,7 +8,7 @@ import sizeOf from 'image-size';
 export class AssetService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async uploadIcon(files: Express.Multer.File[], countryId: number) {
+  async uploadIcon(files: Express.Multer.File[], countryId?: number) {
     const assets = [];
     for (const file of files) {
       const path = file.path.split('public')[1];
@@ -36,7 +37,7 @@ export class AssetService {
             mimeType: file.mimetype,
             fileSize: file.size,
             isImage: true,
-            countryId: countryId,
+            // countryId: countryId,
           },
         });
         assets.push(savedIcon);

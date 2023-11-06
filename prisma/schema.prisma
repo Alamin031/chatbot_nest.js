@@ -9,17 +9,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id        Int       @id @default(autoincrement())
-  username  String    @unique
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
   name      String
-  email     String    @unique
+  email     String   @unique
   password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   avatar    String?
   roles     String
 }
+
 model Admin {
   id        Int      @id @default(autoincrement())
   name      String
@@ -38,18 +40,21 @@ model Country {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   status    String   @default("Draft")
-  icon     Assets[] @relation("CountryIcons")
+  icon      Assets[] @relation("CountryIcons")
 }
+
 model Car {
   id          Int      @id @default(autoincrement())
-  carName     String
+  carName     String?
   description String?
-  carImages   Assets[] @relation("CarImages")
-  brandImages Assets[] @relation("CarBrandImages")
-  carLogos    Assets[] @relation("CarLogos")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  status      String   @default("Draft")
+  carImage    Assets[] @relation("CarImage")
+  arAndroid   Assets[] @relation("ArAndroid")
+  arIso       Assets[] @relation("ArIso")
+  banner      Assets[] @relation("Banner")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    String   @default("Draft")
 }
 
 model Assets {
@@ -68,8 +73,9 @@ model Assets {
   updatedAt DateTime @updatedAt
   countryId Int?
   carId     Int?
-  country      Country? @relation("CountryIcons", fields: [countryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  carImages      Car[] @relation("CarImages")
-  carBrandImages Car[] @relation("CarBrandImages")
-  carLogos       Car[] @relation("CarLogos")
+  country   Country? @relation("CountryIcons", fields: [countryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  carImage  Car?     @relation(fields: [carId], references: [id], name: "CarImage", map: "CarImage_carId_fkey")
+  arAndroid Car?     @relation(fields: [carId], references: [id], name: "ArAndroid", map: "ArAndroid_carId_fkey")
+  arIso     Car?     @relation(fields: [carId], references: [id], name: "ArIso", map: "ArIso_carId_fkey")
+  banner    Car?     @relation(fields: [carId], references: [id], name: "Banner", map: "Banner_carId_fkey")
 }

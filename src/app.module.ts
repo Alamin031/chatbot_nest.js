@@ -8,6 +8,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { CountryModule } from './country/country.modul';
 import { UsersModule } from './user/user.modul';
+import { CarModule } from './car/car.module';
 // import { ErrorsInterceptor } from './decorators/errors.interceptor';
 // import { APP_INTERCEPTOR } from '@nestjs/core';
 @Module({
@@ -22,6 +23,7 @@ import { UsersModule } from './user/user.modul';
     UsersModule,
     AdminModule,
     CountryModule,
+    CarModule,
   ],
   controllers: [AppController],
   providers: [
